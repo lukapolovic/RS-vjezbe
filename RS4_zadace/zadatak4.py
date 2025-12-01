@@ -8,18 +8,26 @@ korisnici = {
 }
 
 async def autentifikacija(ime, lozinka):
-    await asyncio.sleep(2)
-    if ime in korisnici and korisnici[ime] == lozinka:
-        return True
-    raise ValueError("Krivo korisnicko ime ili lozinka")
+    await asyncio.sleep(3)
+    raise TimeoutError("Ne radi autentifikacijski servis")
 
 async def main():
     tasks = [
-        asyncio.create_task(autentifikacija("korisnik1", "lozinka1")),
-        asyncio.create_task(autentifikacija("korisnik2", "lozinka2")),
-        asyncio.create_task(autentifikacija("korisnik1", "pogresna")),
-        asyncio.create_task(autentifikacija("nepostoji", "nesto")),
-        asyncio.create_task(autentifikacija("korisnik3", "lozinka3")),
+        asyncio.create_task(
+            asyncio.wait_for(autentifikacija("korisnik1", "lozinka1"), timeout=4)
+        ),
+        asyncio.create_task(
+            asyncio.wait_for(autentifikacija("korisnik2", "lozinka2"), timeout=4)
+        ),
+        asyncio.create_task(
+            asyncio.wait_for(autentifikacija("korisnik3", "pogresna"), timeout=4)
+        ),
+        asyncio.create_task(
+            asyncio.wait_for(autentifikacija("nepostojece", "abc"), timeout=4)
+        ),
+        asyncio.create_task(
+            asyncio.wait_for(autentifikacija("korisnik3", "lozinka3"), timeout=4)
+        ),
     ]
 
     results = await asyncio.gather(*tasks)
